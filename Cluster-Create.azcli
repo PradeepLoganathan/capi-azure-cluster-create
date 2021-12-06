@@ -1,6 +1,18 @@
 #create the kind cluster
 kind create cluster
 
+# kubectl get pods -A
+# NAMESPACE            NAME                                         READY   STATUS    RESTARTS   AGE
+# kube-system          coredns-558bd4d5db-98vmp                     1/1     Running   0          29m
+# kube-system          coredns-558bd4d5db-jw58j                     1/1     Running   0          29m
+# kube-system          etcd-kind-control-plane                      1/1     Running   0          30m
+# kube-system          kindnet-b4622                                1/1     Running   0          29m
+# kube-system          kube-apiserver-kind-control-plane            1/1     Running   0          30m
+# kube-system          kube-controller-manager-kind-control-plane   1/1     Running   0          30m
+# kube-system          kube-proxy-95wg5                             1/1     Running   0          29m
+# kube-system          kube-scheduler-kind-control-plane            1/1     Running   0          30m
+# local-path-storage   local-path-provisioner-547f784dff-rncr2      1/1     Running   0          29m
+
 #print cluster information
 kubectl cluster-info
 
@@ -17,15 +29,15 @@ export AZURE_SUBSCRIPTION_ID=$(az account show --query 'id' --output tsv)
 export AZURE_SERVICE_PRINCIPAL=$(az ad sp create-for-rbac --role contributor)
 
 #set the client id
-export AZURE_CLIENT_ID=$(echo $AZURE_SERVICE_PRINCIPAL | jq '.appId') 
+export AZURE_CLIENT_ID=$(echo $AZURE_SERVICE_PRINCIPAL | jq -r '.appId') 
 echo $AZURE_CLIENT_ID
 
 #set the client secret
-export AZURE_CLIENT_SECRET=$(echo $AZURE_SERVICE_PRINCIPAL | jq '.password')
+export AZURE_CLIENT_SECRET=$(echo $AZURE_SERVICE_PRINCIPAL | jq -r '.password')
 echo $AZURE_CLIENT_SECRET
 
 #set the tenant id
-export AZURE_TENANT_ID=$(echo $AZURE_SERVICE_PRINCIPAL | jq '.tenant')
+export AZURE_TENANT_ID=$(echo $AZURE_SERVICE_PRINCIPAL | jq -r '.tenant')
 echo $AZURE_TENANT_ID
 
 #set the azure location
@@ -50,3 +62,51 @@ kubectl create secret generic "${AZURE_CLUSTER_IDENTITY_SECRET_NAME}" --from-lit
 
 # Finally, initialize the management cluster
 clusterctl init --infrastructure azure
+
+# Fetching providers
+# Installing cert-manager Version="v1.5.3"
+# Waiting for cert-manager to be available...
+# Installing Provider="cluster-api" Version="v1.0.1" TargetNamespace="capi-system"
+# Installing Provider="bootstrap-kubeadm" Version="v1.0.1" TargetNamespace="capi-kubeadm-bootstrap-system"
+# Installing Provider="control-plane-kubeadm" Version="v1.0.1" TargetNamespace="capi-kubeadm-control-plane-system"
+# I1206 17:45:23.490778    6091 request.go:665] Waited for 1.024684562s due to client-side throttling, not priority and fairness, request: GET:https://127.0.0.1:35691/apis/cluster.x-k8s.io/v1alpha3?timeout=30s
+# Installing Provider="infrastructure-azure" Version="v1.0.1" TargetNamespace="capz-system"
+
+# Your management cluster has been initialized successfully!
+
+# You can now create your first workload cluster by running the following:
+
+#   clusterctl generate cluster [name] --kubernetes-version [version] | kubectl apply -f - took 1m 6s  
+
+
+
+# kubectl get pods -A
+# NAMESPACE            NAME                                         READY   STATUS              RESTARTS   AGE
+# cert-manager         cert-manager-848f547974-82nx2                0/1     ContainerCreating   0          6s
+# cert-manager         cert-manager-cainjector-54f4cc6b5-qrnxf      0/1     ContainerCreating   0          6s
+# cert-manager         cert-manager-webhook-7c9588c76-lwqwg         0/1     ContainerCreating   0          6s
+# kube-system          coredns-558bd4d5db-98vmp                     1/1     Running             0          30m
+# kube-system          coredns-558bd4d5db-jw58j                     1/1     Running             0          30m
+# kube-system          etcd-kind-control-plane                      1/1     Running             0          30m
+# kube-system          kindnet-b4622                                1/1     Running             0          30m
+# kube-system          kube-apiserver-kind-control-plane            1/1     Running             0          30m
+# kube-system          kube-controller-manager-kind-control-plane   1/1     Running             0          30m
+# kube-system          kube-proxy-95wg5                             1/1     Running             0          30m
+# kube-system          kube-scheduler-kind-control-plane            1/1     Running             0          30m
+# local-path-storage   local-path-provisioner-547f784dff-rncr2      1/1     Running             0          30m
+
+
+#  kubectl get pods -A
+# NAMESPACE            NAME                                         READY   STATUS    RESTARTS   AGE
+# cert-manager         cert-manager-848f547974-82nx2                1/1     Running   0          32s
+# cert-manager         cert-manager-cainjector-54f4cc6b5-qrnxf      1/1     Running   0          32s
+# cert-manager         cert-manager-webhook-7c9588c76-lwqwg         0/1     Running   0          32s
+# kube-system          coredns-558bd4d5db-98vmp                     1/1     Running   0          30m
+# kube-system          coredns-558bd4d5db-jw58j                     1/1     Running   0          30m
+# kube-system          etcd-kind-control-plane                      1/1     Running   0          31m
+# kube-system          kindnet-b4622                                1/1     Running   0          30m
+# kube-system          kube-apiserver-kind-control-plane            1/1     Running   0          31m
+# kube-system          kube-controller-manager-kind-control-plane   1/1     Running   0          31m
+# kube-system          kube-proxy-95wg5                             1/1     Running   0          30m
+# kube-system          kube-scheduler-kind-control-plane            1/1     Running   0          31m
+# local-path-storage   local-path-provisioner-547f784dff-rncr2      1/1     Running   0          30m
