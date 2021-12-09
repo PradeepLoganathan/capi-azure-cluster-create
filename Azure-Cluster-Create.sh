@@ -1,17 +1,17 @@
 #create the kind cluster
 kind create cluster
 
-# kubectl get pods -A
-# NAMESPACE            NAME                                         READY   STATUS    RESTARTS   AGE
-# kube-system          coredns-558bd4d5db-98vmp                     1/1     Running   0          29m
-# kube-system          coredns-558bd4d5db-jw58j                     1/1     Running   0          29m
-# kube-system          etcd-kind-control-plane                      1/1     Running   0          30m
-# kube-system          kindnet-b4622                                1/1     Running   0          29m
-# kube-system          kube-apiserver-kind-control-plane            1/1     Running   0          30m
-# kube-system          kube-controller-manager-kind-control-plane   1/1     Running   0          30m
-# kube-system          kube-proxy-95wg5                             1/1     Running   0          29m
-# kube-system          kube-scheduler-kind-control-plane            1/1     Running   0          30m
-# local-path-storage   local-path-provisioner-547f784dff-rncr2      1/1     Running   0          29m
+kubectl get pods -A
+NAMESPACE            NAME                                         READY   STATUS    RESTARTS   AGE
+kube-system          coredns-558bd4d5db-98vmp                     1/1     Running   0          29m
+kube-system          coredns-558bd4d5db-jw58j                     1/1     Running   0          29m
+kube-system          etcd-kind-control-plane                      1/1     Running   0          30m
+kube-system          kindnet-b4622                                1/1     Running   0          29m
+kube-system          kube-apiserver-kind-control-plane            1/1     Running   0          30m
+kube-system          kube-controller-manager-kind-control-plane   1/1     Running   0          30m
+kube-system          kube-proxy-95wg5                             1/1     Running   0          29m
+kube-system          kube-scheduler-kind-control-plane            1/1     Running   0          30m
+local-path-storage   local-path-provisioner-547f784dff-rncr2      1/1     Running   0          29m
 
 #print cluster information
 kubectl cluster-info
@@ -20,6 +20,7 @@ kubectl cluster-info
 #login to azure
 az login
 
+#create a service principal
 az ad sp create-for-rbac --role contributor
 
 #set the azure subscription id
@@ -64,7 +65,7 @@ export AZURE_CLUSTER_IDENTITY_SECRET_NAMESPACE="default"
 # This secret will be referenced by the AzureClusterIdentity used by the AzureCluster
 kubectl create secret generic "${AZURE_CLUSTER_IDENTITY_SECRET_NAME}" --from-literal=clientSecret="${AZURE_CLIENT_SECRET}"
 
-# Finally, initialize the management cluster
+# Initialize the management cluster
 clusterctl init --infrastructure azure
 
 # Fetching providers
@@ -80,11 +81,11 @@ clusterctl init --infrastructure azure
 
 # You can now create your first workload cluster by running the following:
 
-#   clusterctl generate cluster [name] --kubernetes-version [version] | kubectl apply -f - took 1m 6s  
+# clusterctl generate cluster [name] --kubernetes-version [version] | kubectl apply -f - took 1m 6s  
 
 
 
-# kubectl get pods -A
+kubectl get pods -A
 # NAMESPACE            NAME                                         READY   STATUS              RESTARTS   AGE
 # cert-manager         cert-manager-848f547974-82nx2                0/1     ContainerCreating   0          6s
 # cert-manager         cert-manager-cainjector-54f4cc6b5-qrnxf      0/1     ContainerCreating   0          6s
@@ -99,24 +100,8 @@ clusterctl init --infrastructure azure
 # kube-system          kube-scheduler-kind-control-plane            1/1     Running             0          30m
 # local-path-storage   local-path-provisioner-547f784dff-rncr2      1/1     Running             0          30m
 
-
-#  kubectl get pods -A
-# NAMESPACE            NAME                                         READY   STATUS    RESTARTS   AGE
-# cert-manager         cert-manager-848f547974-82nx2                1/1     Running   0          32s
-# cert-manager         cert-manager-cainjector-54f4cc6b5-qrnxf      1/1     Running   0          32s
-# cert-manager         cert-manager-webhook-7c9588c76-lwqwg         0/1     Running   0          32s
-# kube-system          coredns-558bd4d5db-98vmp                     1/1     Running   0          30m
-# kube-system          coredns-558bd4d5db-jw58j                     1/1     Running   0          30m
-# kube-system          etcd-kind-control-plane                      1/1     Running   0          31m
-# kube-system          kindnet-b4622                                1/1     Running   0          30m
-# kube-system          kube-apiserver-kind-control-plane            1/1     Running   0          31m
-# kube-system          kube-controller-manager-kind-control-plane   1/1     Running   0          31m
-# kube-system          kube-proxy-95wg5                             1/1     Running   0          30m
-# kube-system          kube-scheduler-kind-control-plane            1/1     Running   0          31m
-# local-path-storage   local-path-provisioner-547f784dff-rncr2      1/1     Running   0          30m
-
-
-# kubectl get pods -A
+#CAPI and capz pods running to begin cluster creation on Azure
+ kubectl get pods -A
 # NAMESPACE                           NAME                                                             READY   STATUS    RESTARTS   AGE
 # capi-kubeadm-bootstrap-system       capi-kubeadm-bootstrap-controller-manager-58945b95bf-87lvj       1/1     Running   0          9m46s
 # capi-kubeadm-control-plane-system   capi-kubeadm-control-plane-controller-manager-58fc8f8c7c-9w5pm   1/1     Running   0          9m45s
@@ -383,11 +368,11 @@ kubectl apply -f pradeep-capz-cluster.yaml
 # azureclusteridentity.infrastructure.cluster.x-k8s.io/cluster-identity created
 
 az group list -o table
-# Name                               Location       Status
-# ---------------------------------  -------------  ---------
-# pradeepl-cluster                   eastus         Succeeded
-# cloud-shell-storage-southeastasia  southeastasia  Succeeded
-# NetworkWatcherRG                   australiaeast  Succeeded
+Name                               Location       Status
+---------------------------------  -------------  ---------
+pradeepl-cluster                   eastus         Succeeded
+cloud-shell-storage-southeastasia  southeastasia  Succeeded
+NetworkWatcherRG                   australiaeast  Succeeded
 
 az resource list -g pradeepl-cluster -o table
 # Name                                      ResourceGroup     Location    Type                                     Status
@@ -403,7 +388,7 @@ az resource list -g pradeepl-cluster -o table
 # pradeepl-cluster-control-plane-n24kv-nic  pradeepl-cluster  eastus      Microsoft.Network/networkInterfaces
 
 
- az resource list -g pradeepl-cluster -o table
+az resource list -g pradeepl-cluster -o table
 # Name                                                           ResourceGroup     Location    Type                                          Status
 # -------------------------------------------------------------  ----------------  ----------  --------------------------------------------  --------
 # pradeepl-cluster-vnet                                          pradeepl-cluster  eastus      Microsoft.Network/virtualNetworks
@@ -518,8 +503,8 @@ clusterctl get kubeconfig pradeepl-cluster > pradeepl-cluster.kubeconfig
 
 #Deploy a CNI solution - Azure does not currently support Calico networking. As a workaround, it is recommended that Azure clusters use the Calico spec below that uses VXLAN.
 
-kubectl --kubeconfig=./pradeepl-cluster.kubeconfig \
-  apply -f https://raw.githubusercontent.com/kubernetes-sigs/cluster-api-provider-azure/main/templates/addons/calico.yaml
+# kubectl --kubeconfig=./pradeepl-cluster.kubeconfig \
+#   apply -f https://raw.githubusercontent.com/kubernetes-sigs/cluster-api-provider-azure/main/templates/addons/calico.yaml
 
 # configmap/calico-config created
 # customresourcedefinition.apiextensions.k8s.io/bgpconfigurations.crd.projectcalico.org created
@@ -568,3 +553,175 @@ kubectl --kubeconfig=./pradeepl-cluster.kubeconfig get nodes
 # pradeepl-cluster-md-0-547cl            Ready    <none>                 33m   v1.22.0
 # pradeepl-cluster-md-0-jv86m            Ready    <none>                 33m   v1.22.0
 # pradeepl-cluster-md-0-zlw9q            Ready    <none>                 33m   v1.22.0
+
+
+kubectl describe cluster
+# Name:         pradeepl-cluster
+# Namespace:    default
+# Labels:       cni=calico
+# Annotations:  <none>
+# API Version:  cluster.x-k8s.io/v1beta1
+# Kind:         Cluster
+# Metadata:
+#   Creation Timestamp:  2021-12-06T10:16:11Z
+#   Finalizers:
+#     cluster.cluster.x-k8s.io
+#   Generation:  2
+#   Managed Fields:
+#     API Version:  cluster.x-k8s.io/v1beta1
+#     Fields Type:  FieldsV1
+#     fieldsV1:
+#       f:metadata:
+#         f:annotations:
+#           .:
+#           f:kubectl.kubernetes.io/last-applied-configuration:
+#         f:labels:
+#           .:
+#           f:cni:
+#       f:spec:
+#         .:
+#         f:clusterNetwork:
+#           .:
+#           f:pods:
+#             .:
+#             f:cidrBlocks:
+#         f:controlPlaneRef:
+#           .:
+#           f:apiVersion:
+#           f:kind:
+#           f:name:
+#         f:infrastructureRef:
+#           .:
+#           f:apiVersion:
+#           f:kind:
+#           f:name:
+#     Manager:      kubectl-client-side-apply
+#     Operation:    Update
+#     Time:         2021-12-06T10:16:11Z
+#     API Version:  cluster.x-k8s.io/v1beta1
+#     Fields Type:  FieldsV1
+#     fieldsV1:
+#       f:metadata:
+#         f:finalizers:
+#           .:
+#           v:"cluster.cluster.x-k8s.io":
+#       f:spec:
+#         f:controlPlaneEndpoint:
+#           f:host:
+#           f:port:
+#       f:status:
+#         .:
+#         f:conditions:
+#         f:controlPlaneReady:
+#         f:failureDomains:
+#           .:
+#           f:1:
+#             .:
+#             f:controlPlane:
+#           f:2:
+#             .:
+#             f:controlPlane:
+#           f:3:
+#             .:
+#             f:controlPlane:
+#         f:infrastructureReady:
+#         f:observedGeneration:
+#         f:phase:
+#     Manager:         manager
+#     Operation:       Update
+#     Time:            2021-12-06T10:53:29Z
+#   Resource Version:  56671
+#   UID:               e4b6a7b2-10ba-4820-bd0f-ba40c4d95008
+# Spec:
+#   Cluster Network:
+#     Pods:
+#       Cidr Blocks:
+#         192.168.0.0/16
+#   Control Plane Endpoint:
+#     Host:  pradeepl-cluster-358cdd06.eastus.cloudapp.azure.com
+#     Port:  6443
+#   Control Plane Ref:
+#     API Version:  controlplane.cluster.x-k8s.io/v1beta1
+#     Kind:         KubeadmControlPlane
+#     Name:         pradeepl-cluster-control-plane
+#     Namespace:    default
+#   Infrastructure Ref:
+#     API Version:  infrastructure.cluster.x-k8s.io/v1beta1
+#     Kind:         AzureCluster
+#     Name:         pradeepl-cluster
+#     Namespace:    default
+# Status:
+#   Conditions:
+#     Last Transition Time:  2021-12-06T10:26:14Z
+#     Status:                True
+#     Type:                  Ready
+#     Last Transition Time:  2021-12-06T10:20:13Z
+#     Status:                True
+#     Type:                  ControlPlaneInitialized
+#     Last Transition Time:  2021-12-06T10:26:14Z
+#     Status:                True
+#     Type:                  ControlPlaneReady
+#     Last Transition Time:  2021-12-06T10:18:00Z
+#     Status:                True
+#     Type:                  InfrastructureReady
+#   Control Plane Ready:     true
+#   Failure Domains:
+#     1:
+#       Control Plane:  true
+#     2:
+#       Control Plane:  true
+#     3:
+#       Control Plane:     true
+#   Infrastructure Ready:  true
+#   Observed Generation:   2
+#   Phase:                 Provisioned
+# Events:                  <none>
+
+# Delete the azure infrastructure provider except the hosting namespace and the CRD's
+
+clusterctl delete --infrastructure azure
+# Deleting Provider="infrastructure-azure" Version="" Namespace="capz-system"
+
+# NAMESPACE                           NAME                                                             READY   STATUS        RESTARTS   AGE
+# capi-kubeadm-bootstrap-system       capi-kubeadm-bootstrap-controller-manager-58945b95bf-87lvj       1/1     Running       1          20h
+# capi-kubeadm-control-plane-system   capi-kubeadm-control-plane-controller-manager-58fc8f8c7c-9w5pm   1/1     Running       2          20h
+# capi-system                         capi-controller-manager-576744d8b7-8rwsn                         1/1     Running       2          20h
+# capz-system                         capz-nmi-svrht                                                   1/1     Terminating   1          20h
+# cert-manager                        cert-manager-848f547974-82nx2                                    1/1     Running       1          20h
+# cert-manager                        cert-manager-cainjector-54f4cc6b5-qrnxf                          1/1     Running       2          20h
+# cert-manager                        cert-manager-webhook-7c9588c76-lwqwg                             1/1     Running       1          20h
+# kube-system                         coredns-558bd4d5db-98vmp                                         1/1     Running       1          20h
+# kube-system                         coredns-558bd4d5db-jw58j                                         1/1     Running       1          20h
+# kube-system                         etcd-kind-control-plane                                          1/1     Running       1          20h
+# kube-system                         kindnet-b4622                                                    1/1     Running       1          20h
+# kube-system                         kube-apiserver-kind-control-plane                                1/1     Running       1          20h
+# kube-system                         kube-controller-manager-kind-control-plane                       1/1     Running       1          20h
+# kube-system                         kube-proxy-95wg5                                                 1/1     Running       1          20h
+# kube-system                         kube-scheduler-kind-control-plane                                1/1     Running       1          20h
+# local-path-storage                  local-path-provisioner-547f784dff-rncr2                          1/1     Running       2          20h
+
+❯ clusterctl delete --all
+Deleting Provider="bootstrap-kubeadm" Version="v1.0.1" Namespace="capi-kubeadm-bootstrap-system"
+Deleting Provider="control-plane-kubeadm" Version="v1.0.1" Namespace="capi-kubeadm-control-plane-system"
+
+kubectl get pods -A
+# NAMESPACE                           NAME                                                             READY   STATUS        RESTARTS   AGE
+# capi-kubeadm-bootstrap-system       capi-kubeadm-bootstrap-controller-manager-58945b95bf-87lvj       0/1     Terminating   1          20h
+# capi-kubeadm-control-plane-system   capi-kubeadm-control-plane-controller-manager-58fc8f8c7c-9w5pm   0/1     Terminating   2          20h
+# cert-manager                        cert-manager-848f547974-82nx2                                    1/1     Running       1          20h
+# cert-manager                        cert-manager-cainjector-54f4cc6b5-qrnxf                          1/1     Running       2          20h
+# cert-manager                        cert-manager-webhook-7c9588c76-lwqwg                             1/1     Running       1          20h
+# kube-system                         coredns-558bd4d5db-98vmp                                         1/1     Running       1          20h
+# kube-system                         coredns-558bd4d5db-jw58j                                         1/1     Running       1          20h
+# kube-system                         etcd-kind-control-plane                                          1/1     Running       1          20h
+# kube-system                         kindnet-b4622                                                    1/1     Running       1          20h
+# kube-system                         kube-apiserver-kind-control-plane                                1/1     Running       1          20h
+# kube-system                         kube-controller-manager-kind-control-plane                       1/1     Running       1          20h
+# kube-system                         kube-proxy-95wg5                                                 1/1     Running       1          20h
+# kube-system                         kube-scheduler-kind-control-plane                                1/1     Running       1          20h
+# local-path-storage                  local-path-provisioner-547f784dff-rncr2                          1/1     Running       2          20h
+
+
+az group delete -n pradeepl-cluster
+Are you sure you want to perform this operation? (y/n): y
+ / Running ..
